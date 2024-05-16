@@ -35,7 +35,7 @@
             </button>
           </router-link>
           <template v-if="isLoggedIn">
-            <router-link to="/profile" class="text-decoration-none">
+            <router-link to="" class="text-decoration-none">
               <button type="button" class="btn btn-warning">
                 {{ name }}
               </button></router-link

@@ -7,8 +7,9 @@
           class="post-container"
       >
         <div class="post-content">
-          <span>貼文id：{{ post.postId }} - 發布時間：{{ formatCreatedAt(post.createdAt) }}</span><br>
-          <span>內容：{{ post.content }}</span>
+          <span>貼文id：{{ post.postId }}</span><br>
+          <span>內容：{{ post.content }}</span><br>
+          <span> - 發布時間：{{ formatCreatedAt(post.createdAt) }}</span>
           <template v-if="post.user.userId == id()">
             <button @click="editPost(post)" class="submit-button">
               編輯
@@ -16,6 +17,15 @@
             <button @click="deletePost(post)" class="submit-button">
               刪除
             </button>
+          </template>
+          <button @click="addComment(post)" class="submit-button">
+            留言
+          </button>
+        </div><hr>
+        <div v-for="comment in Comments" :key="comment.commentId">
+          <template v-if="comment.post.postId == post.postId">
+            <span>留言內容：{{ comment.content }}</span>
+            <span> - {{ formatCreatedAt(comment.createdAt) }}</span>
           </template>
         </div>
       </div>
@@ -26,6 +36,14 @@
         <span class="close" @click="closeEditModal">&times;</span>
         <textarea v-model="editedContent"></textarea>
         <button @click="saveEditedPost" class="submit-button">保存</button>
+      </div>
+    </div>
+
+    <div v-if="showCommentModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeCommentModal">&times;</span>
+        <textarea v-model="comment"></textarea>
+        <button @click="saveComment" class="submit-button">保存</button>
       </div>
     </div>
   </main>
@@ -39,17 +57,26 @@ export default {
   data() {
     return {
       Posts: [],
+      Comments: [],
       editedPostId: null,
       editedContent: "",
       showEditModal: false,
+      showCommentModal: false,
       image: "",
+      comment: "",
     };
   },
   methods: {
     fetchData() {
       axios.get(`${this.API_URL}/post/listAll`).then((rs) => {
-        console.log(rs);
         this.Posts = rs.data;
+      });
+    },
+    fetchCommentData() {
+      axios.get(`${this.API_URL}/comment/listAll`).then((rs) => {
+        this.Comments = rs.data;
+        console.log(rs.data);
+
       });
     },
     editPost(post) {
@@ -88,13 +115,43 @@ export default {
       const date = new Date(createdAt);
       return date.toLocaleString();
     },
+    closeCommentModal(){
+      this.showCommentModal = false;
+      this.comment = "";
+    },
+    saveComment(){
+      if (this.comment.trim() !== "")
+      {
+        const fd = new FormData();
+        fd.append("postId", this.editedPostId);
+        fd.append("userId", this.id());
+        fd.append("content", this.comment);
+
+        axios
+            .post(`${this.API_URL}/comment/newComment`, fd)
+            .then(() => {
+              this.fetchCommentData(this.editedPostId);
+              this.closeCommentModal();
+            });
+      }else{
+        window.alert("留言內容不能為空");
+      }
+
+    },
+    addComment(post) {
+      this.editedPostId = post.postId;
+      this.showCommentModal = true;
+
+    },
   },
   mounted() {
     const userStore = useUserStore();
     if (userStore.isLoggedIn) {
       this.fetchData();
+      this.fetchCommentData();
     } else {
-      console.log("請先登入");
+      window.alert("請先登入");
+      this.$router.push("/login");
     }
   },
 };
@@ -156,8 +213,6 @@ export default {
 
 .submit-button {
   margin-top: 10px;
-  margin-left: auto; /* 將按鈕置中 */
-  display: block; /* 讓按鈕佔據整行 */
 }
 
 textarea {
