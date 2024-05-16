@@ -13,12 +13,12 @@
             >
           </li>
           <li>
-            <router-link to="/shop" class="nav-link px-2 text-white"
+            <router-link to="/postList" class="nav-link px-2 text-white"
               >瀏覽</router-link
             >
           </li>
           <li>
-            <router-link to="/cart" class="nav-link px-2 text-white"
+            <router-link to="/postAdd" class="nav-link px-2 text-white"
               >發文</router-link
             >
           </li>

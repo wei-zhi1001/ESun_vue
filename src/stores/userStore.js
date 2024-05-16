@@ -6,7 +6,7 @@ export const useUserStore = defineStore("userStore", {
       userId: "",
       userName: "",
       userEmail: "",
-      userAuthentication: "",
+      userPhone: "",
       isLoggedIn: false,
     };
   },
@@ -15,7 +15,7 @@ export const useUserStore = defineStore("userStore", {
       this.userId = user.userId;
       this.userName = user.userName;
       this.userEmail = user.userEmail;
-      this.userAuthentication = user.userAuthentication;
+      this.userPhone = user.userPhone;
       this.isLoggedIn = true;
     },
 
@@ -23,7 +23,7 @@ export const useUserStore = defineStore("userStore", {
       this.userId = "";
       this.userName = "";
       this.userEmail = "";
-      this.userAuthentication = "";
+      this.userPhone = "";
       this.isLoggedIn = false;
     },
   },
